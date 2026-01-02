@@ -50,21 +50,70 @@ def get_language(request: Request):
     lang = request.cookies.get("lang")
     return lang if lang in ["ar", "he"] else "ar"
 
+# قالب CSS عالمي للتحسينات UX
+css_style = """
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    padding: 15px;
+    margin: 0;
+    text-align: center;
+}
+h1, h2 {
+    color: #2c3e50;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+input, textarea, button, a.button {
+    width: 90%;
+    max-width: 300px;
+    padding: 12px;
+    margin: 8px auto;
+    border-radius: 10px;
+    border: 1px solid #bdc3c7;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+button, a.button {
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+}
+button:hover, a.button:hover {
+    background-color: #2980b9;
+    cursor: pointer;
+}
+textarea { height: 100px; }
+.report {
+    background: white;
+    padding: 12px;
+    margin: 12px auto;
+    border-radius: 10px;
+    max-width: 350px;
+    word-wrap: break-word;
+}
+a.approve { background: #27ae60; }
+a.reject { background: #c0392b; }
+a.approve:hover { background: #2ecc71; }
+a.reject:hover { background: #e74c3c; }
+@media (max-width: 400px) {
+    h1, h2 { font-size: 1.5em; }
+    input, textarea, button, a.button { width: 95%; }
+}
+</style>
+"""
+
 # الصفحة الرئيسية
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request, d=Depends(db)):
     lang = get_language(request)
     if lang == "he":
-        return """
+        return f"""
         <html lang="he" dir="rtl">
-        <head>
-        <style>
-            body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; text-align:center;}
-            h1 { color:#2c3e50; }
-            a.button { display:inline-block; margin:10px; padding:10px 20px; background:#3498db; color:white; text-decoration:none; border-radius:10px; }
-            a.button:hover { background:#2980b9; }
-        </style>
-        </head>
+        <head>{css_style}</head>
         <body>
         <h1>HamalNews | חדשות</h1>
         <a class='button' href='/register'>הרשמה</a>
@@ -72,16 +121,9 @@ def home(request: Request, d=Depends(db)):
         <a class='button' href='/set_language/ar'>AR</a>
         </body></html>
         """
-    return """
+    return f"""
     <html lang="ar" dir="rtl">
-    <head>
-    <style>
-        body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; text-align:center;}
-        h1 { color:#2c3e50; }
-        a.button { display:inline-block; margin:10px; padding:10px 20px; background:#3498db; color:white; text-decoration:none; border-radius:10px; }
-        a.button:hover { background:#2980b9; }
-    </style>
-    </head>
+    <head>{css_style}</head>
     <body>
     <h1>HamalNews | حمّال نيوز</h1>
     <a class='button' href='/register'>تسجيل</a>
@@ -102,16 +144,9 @@ def set_language(lang: str):
 def reg(request: Request):
     lang = get_language(request)
     if lang == "he":
-        return """
+        return f"""
         <html lang="he" dir="rtl">
-        <head>
-        <style>
-            body{ font-family:Arial; background:#ecf0f1; text-align:center; padding:30px;}
-            input, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:200px;}
-            button { background:#27ae60; color:white; border:none;}
-            button:hover { background:#2ecc71; cursor:pointer;}
-        </style>
-        </head>
+        <head>{css_style}</head>
         <body>
         <h2>הרשמה</h2>
         <form method=post>
@@ -120,16 +155,9 @@ def reg(request: Request):
         <button>הרשמה</button></form>
         </body></html>
         """
-    return """
+    return f"""
     <html lang="ar" dir="rtl">
-    <head>
-    <style>
-        body{ font-family:Arial; background:#ecf0f1; text-align:center; padding:30px;}
-        input, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:200px;}
-        button { background:#27ae60; color:white; border:none;}
-        button:hover { background:#2ecc71; cursor:pointer;}
-    </style>
-    </head>
+    <head>{css_style}</head>
     <body>
     <h2>تسجيل</h2>
     <form method=post>
@@ -153,16 +181,9 @@ def reg_post(u: str = Form(...), p: str = Form(...), d=Depends(db)):
 def add(request: Request):
     lang = get_language(request)
     if lang == "he":
-        return """
+        return f"""
         <html lang="he" dir="rtl">
-        <head>
-        <style>
-            body{ font-family:Arial; background:#fefefe; padding:30px; text-align:center;}
-            input, textarea, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:250px;}
-            button { background:#e67e22; color:white; border:none;}
-            button:hover { background:#d35400; cursor:pointer;}
-        </style>
-        </head>
+        <head>{css_style}</head>
         <body>
         <h2>שלח דיווח</h2>
         <form method=post>
@@ -171,16 +192,9 @@ def add(request: Request):
         <button>שלח</button></form>
         </body></html>
         """
-    return """
+    return f"""
     <html lang="ar" dir="rtl">
-    <head>
-    <style>
-        body{ font-family:Arial; background:#fefefe; padding:30px; text-align:center;}
-        input, textarea, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:250px;}
-        button { background:#e67e22; color:white; border:none;}
-        button:hover { background:#d35400; cursor:pointer;}
-    </style>
-    </head>
+    <head>{css_style}</head>
     <body>
     <h2>إضافة بلاغ</h2>
     <form method=post>
@@ -201,18 +215,9 @@ def add_post(t: str = Form(...), c: str = Form(...), d=Depends(db)):
 @app.get("/admin", response_class=HTMLResponse)
 def admin_panel(d=Depends(db)):
     reports = d.query(Report).all()
-    html = """
+    html = f"""
     <html lang="ar" dir="rtl">
-    <head>
-    <style>
-        body{ font-family:Arial; background:#f7f7f7; padding:20px;}
-        h2{ color:#2c3e50; text-align:center;}
-        .report{background:white; padding:10px; margin:10px auto; border-radius:8px; width:300px;}
-        a.button{padding:5px 10px; margin:5px; text-decoration:none; color:white; border-radius:8px;}
-        a.approve{background:#27ae60;} a.reject{background:#c0392b;}
-        a.approve:hover{background:#2ecc71;} a.reject:hover{background:#e74c3c;}
-    </style>
-    </head>
+    <head>{css_style}</head>
     <body>
     <h2>لوحة الأدمن</h2>
     """
@@ -236,7 +241,7 @@ def approve(report_id: int, d=Depends(db)):
 
 @app.get("/admin/reject/{report_id}")
 def reject(report_id: int, d=Depends(db)):
-    report = d.query(Report.id == report_id).first()
+    report = d.query(Report).filter(Report.id == report_id).first()
     report.status = "rejected"
     d.commit()
     return RedirectResponse("/admin", 303)
