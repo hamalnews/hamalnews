@@ -13,13 +13,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# إعداد قاعدة البيانات
+# قاعدة البيانات
 engine = create_engine("sqlite:///./db.sqlite", connect_args={"check_same_thread": False})
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# نموذج المستخدم
+# جدول المستخدمين
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -27,7 +27,7 @@ class User(Base):
     password = Column(String)
     role = Column(String, default="user")  # user أو admin
 
-# نموذج البلاغ
+# جدول البلاغات
 class Report(Base):
     __tablename__ = "reports"
     id = Column(Integer, primary_key=True)
@@ -37,7 +37,7 @@ class Report(Base):
 
 Base.metadata.create_all(engine)
 
-# دالة لجلسة قاعدة البيانات
+# جلسة قاعدة البيانات
 def db():
     s = Session()
     try:
@@ -45,12 +45,12 @@ def db():
     finally:
         s.close()
 
-# دالة لتحديد اللغة
+# تحديد اللغة
 def get_language(request: Request):
     lang = request.cookies.get("lang")
     return lang if lang in ["ar", "he"] else "ar"
 
-# قالب CSS عالمي للتحسينات UX
+# CSS عالمي لكل الصفحات (تحسين UX للموبايل)
 css_style = """
 <style>
 body {
@@ -60,14 +60,10 @@ body {
     margin: 0;
     text-align: center;
 }
-h1, h2 {
-    color: #2c3e50;
-    font-size: 1.8em;
-    margin-bottom: 20px;
-}
+h1, h2 { color: #2c3e50; margin-bottom: 20px; }
 input, textarea, button, a.button {
     width: 90%;
-    max-width: 300px;
+    max-width: 320px;
     padding: 12px;
     margin: 8px auto;
     border-radius: 10px;
@@ -92,7 +88,7 @@ textarea { height: 100px; }
     padding: 12px;
     margin: 12px auto;
     border-radius: 10px;
-    max-width: 350px;
+    max-width: 360px;
     word-wrap: break-word;
 }
 a.approve { background: #27ae60; }
@@ -150,8 +146,8 @@ def reg(request: Request):
         <body>
         <h2>הרשמה</h2>
         <form method=post>
-        <input name=u placeholder='שם משתמש'><br>
-        <input name=p placeholder='סיסמה' type=password><br>
+        <input name=u placeholder='שם משתמש' required><br>
+        <input name=p placeholder='סיסמה' type=password required><br>
         <button>הרשמה</button></form>
         </body></html>
         """
@@ -161,9 +157,9 @@ def reg(request: Request):
     <body>
     <h2>تسجيل</h2>
     <form method=post>
-    <input name=u placeholder='Username'><br>
-    <input name=p placeholder='Password' type=password><br>
-    <button>Register</button></form>
+    <input name=u placeholder='Username' required><br>
+    <input name=p placeholder='Password' type=password required><br>
+    <button>تسجيل</button></form>
     </body></html>
     """
 
@@ -187,8 +183,8 @@ def add(request: Request):
         <body>
         <h2>שלח דיווח</h2>
         <form method=post>
-        <input name=t placeholder='כותרת'><br>
-        <textarea name=c rows=5 placeholder='תוכן'></textarea><br>
+        <input name=t placeholder='כותרת' required><br>
+        <textarea name=c rows=5 placeholder='תוכן' required></textarea><br>
         <button>שלח</button></form>
         </body></html>
         """
@@ -198,9 +194,9 @@ def add(request: Request):
     <body>
     <h2>إضافة بلاغ</h2>
     <form method=post>
-    <input name=t placeholder='Title'><br>
-    <textarea name=c rows=5 placeholder='Content'></textarea><br>
-    <button>Send</button></form>
+    <input name=t placeholder='عنوان' required><br>
+    <textarea name=c rows=5 placeholder='محتوى' required></textarea><br>
+    <button>إرسال</button></form>
     </body></html>
     """
 
@@ -232,6 +228,7 @@ def admin_panel(d=Depends(db)):
     html += "</body></html>"
     return html
 
+# الموافقة على البلاغ
 @app.get("/admin/approve/{report_id}")
 def approve(report_id: int, d=Depends(db)):
     report = d.query(Report).filter(Report.id == report_id).first()
@@ -239,6 +236,7 @@ def approve(report_id: int, d=Depends(db)):
     d.commit()
     return RedirectResponse("/admin", 303)
 
+# رفض البلاغ
 @app.get("/admin/reject/{report_id}")
 def reject(report_id: int, d=Depends(db)):
     report = d.query(Report).filter(Report.id == report_id).first()
