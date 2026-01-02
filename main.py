@@ -56,12 +56,38 @@ def home(request: Request, d=Depends(db)):
     lang = get_language(request)
     if lang == "he":
         return """
-        <h2>HamalNews | חדשות</h2>
-        <a href='/register'>הרשמה</a> | <a href='/add'>שלח דיווח</a> | <a href='/set_language/ar'>AR</a>
+        <html lang="he" dir="rtl">
+        <head>
+        <style>
+            body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; text-align:center;}
+            h1 { color:#2c3e50; }
+            a.button { display:inline-block; margin:10px; padding:10px 20px; background:#3498db; color:white; text-decoration:none; border-radius:10px; }
+            a.button:hover { background:#2980b9; }
+        </style>
+        </head>
+        <body>
+        <h1>HamalNews | חדשות</h1>
+        <a class='button' href='/register'>הרשמה</a>
+        <a class='button' href='/add'>שלח דיווח</a>
+        <a class='button' href='/set_language/ar'>AR</a>
+        </body></html>
         """
     return """
-    <h2>HamalNews | حمّال نيوز</h2>
-    <a href='/register'>تسجيل</a> | <a href='/add'>إضافة بلاغ</a> | <a href='/set_language/he'>HE</a>
+    <html lang="ar" dir="rtl">
+    <head>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; text-align:center;}
+        h1 { color:#2c3e50; }
+        a.button { display:inline-block; margin:10px; padding:10px 20px; background:#3498db; color:white; text-decoration:none; border-radius:10px; }
+        a.button:hover { background:#2980b9; }
+    </style>
+    </head>
+    <body>
+    <h1>HamalNews | حمّال نيوز</h1>
+    <a class='button' href='/register'>تسجيل</a>
+    <a class='button' href='/add'>إضافة بلاغ</a>
+    <a class='button' href='/set_language/he'>HE</a>
+    </body></html>
     """
 
 # تغيير اللغة
@@ -77,22 +103,45 @@ def reg(request: Request):
     lang = get_language(request)
     if lang == "he":
         return """
+        <html lang="he" dir="rtl">
+        <head>
+        <style>
+            body{ font-family:Arial; background:#ecf0f1; text-align:center; padding:30px;}
+            input, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:200px;}
+            button { background:#27ae60; color:white; border:none;}
+            button:hover { background:#2ecc71; cursor:pointer;}
+        </style>
+        </head>
+        <body>
+        <h2>הרשמה</h2>
         <form method=post>
-        <input name=u placeholder='שם משתמש'>
-        <input name=p placeholder='סיסמה' type=password>
+        <input name=u placeholder='שם משתמש'><br>
+        <input name=p placeholder='סיסמה' type=password><br>
         <button>הרשמה</button></form>
+        </body></html>
         """
     return """
+    <html lang="ar" dir="rtl">
+    <head>
+    <style>
+        body{ font-family:Arial; background:#ecf0f1; text-align:center; padding:30px;}
+        input, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:200px;}
+        button { background:#27ae60; color:white; border:none;}
+        button:hover { background:#2ecc71; cursor:pointer;}
+    </style>
+    </head>
+    <body>
+    <h2>تسجيل</h2>
     <form method=post>
-    <input name=u placeholder='Username'>
-    <input name=p placeholder='Password' type=password>
+    <input name=u placeholder='Username'><br>
+    <input name=p placeholder='Password' type=password><br>
     <button>Register</button></form>
+    </body></html>
     """
 
 # معالجة التسجيل
 @app.post("/register")
 def reg_post(u: str = Form(...), p: str = Form(...), d=Depends(db)):
-    # أول مستخدم يصبح أدمن
     user_count = d.query(User).count()
     role = "admin" if user_count == 0 else "user"
     d.add(User(username=u, password=pwd.hash(p), role=role))
@@ -105,16 +154,40 @@ def add(request: Request):
     lang = get_language(request)
     if lang == "he":
         return """
+        <html lang="he" dir="rtl">
+        <head>
+        <style>
+            body{ font-family:Arial; background:#fefefe; padding:30px; text-align:center;}
+            input, textarea, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:250px;}
+            button { background:#e67e22; color:white; border:none;}
+            button:hover { background:#d35400; cursor:pointer;}
+        </style>
+        </head>
+        <body>
+        <h2>שלח דיווח</h2>
         <form method=post>
-        <input name=t placeholder='כותרת'>
-        <textarea name=c></textarea>
+        <input name=t placeholder='כותרת'><br>
+        <textarea name=c rows=5 placeholder='תוכן'></textarea><br>
         <button>שלח</button></form>
+        </body></html>
         """
     return """
+    <html lang="ar" dir="rtl">
+    <head>
+    <style>
+        body{ font-family:Arial; background:#fefefe; padding:30px; text-align:center;}
+        input, textarea, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #bdc3c7; width:250px;}
+        button { background:#e67e22; color:white; border:none;}
+        button:hover { background:#d35400; cursor:pointer;}
+    </style>
+    </head>
+    <body>
+    <h2>إضافة بلاغ</h2>
     <form method=post>
-    <input name=t placeholder='Title'>
-    <textarea name=c></textarea>
+    <input name=t placeholder='Title'><br>
+    <textarea name=c rows=5 placeholder='Content'></textarea><br>
     <button>Send</button></form>
+    </body></html>
     """
 
 # معالجة إضافة البلاغ
@@ -128,11 +201,30 @@ def add_post(t: str = Form(...), c: str = Form(...), d=Depends(db)):
 @app.get("/admin", response_class=HTMLResponse)
 def admin_panel(d=Depends(db)):
     reports = d.query(Report).all()
-    html = "<h2>لوحة الأدمن</h2>"
+    html = """
+    <html lang="ar" dir="rtl">
+    <head>
+    <style>
+        body{ font-family:Arial; background:#f7f7f7; padding:20px;}
+        h2{ color:#2c3e50; text-align:center;}
+        .report{background:white; padding:10px; margin:10px auto; border-radius:8px; width:300px;}
+        a.button{padding:5px 10px; margin:5px; text-decoration:none; color:white; border-radius:8px;}
+        a.approve{background:#27ae60;} a.reject{background:#c0392b;}
+        a.approve:hover{background:#2ecc71;} a.reject:hover{background:#e74c3c;}
+    </style>
+    </head>
+    <body>
+    <h2>لوحة الأدمن</h2>
+    """
     for r in reports:
-        html += f"<div><b>{r.title}</b> - {r.status} \
-        <a href='/admin/approve/{r.id}'>✔ موافقة</a> \
-        <a href='/admin/reject/{r.id}'>❌ رفض</a></div><hr>"
+        html += f"""
+        <div class='report'>
+        <b>{r.title}</b> - {r.status}<br>
+        <a class='button approve' href='/admin/approve/{r.id}'>✔ موافقة</a>
+        <a class='button reject' href='/admin/reject/{r.id}'>❌ رفض</a>
+        </div>
+        """
+    html += "</body></html>"
     return html
 
 @app.get("/admin/approve/{report_id}")
